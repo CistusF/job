@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <title>바이트 계산</title>
+    <charset="utf-8"/>
+</head>
+
+<body>
+<style>
+.noresize{resize:none;}h1,body{text-align:center;}.noresize,body{color:white;}body,.noresize{background-color:black;}textarea{width:80vw;}textarea{overflow:visible;}textarea{min-height:60vh;}
+li{ border:1px solid; padding:10px; height:2; width:25%; margin:auto; text-align:left; }
+section{
+  text-align:center;
+}
+</style>
+    <textarea id='box'></textarea>
+    <p id='result'>byte : 0</p>
+    <script>
+        window.setInterval(refresh, 1);
+        function refresh() {
+            var a = document.getElementById('box').value.replace(/\n/g,'ii')
+            document.getElementById('result').innerHTML = "byte : " + byteLengthOf(a)
+        }
+        function byteLengthOf(s) {
+            var n = 0;
+            for (var i = 0, l = s.length; i < l; i++) {
+                var hi = s.charCodeAt(i);
+                if (hi < 0x0080) {
+                    n += 1;
+                } else if (hi < 0x0800) {
+                    n += 2;
+                } else if (hi < 0xD800) {
+                    n += 3;
+                } else if (hi < 0xDC00) {
+                    var lo = s.charCodeAt(++i);
+                    if (i < l && lo >= 0xDC00 && lo <= 0xDFFF) {
+                        n += 4;
+                    } else {
+                        throw new Error("UCS-2 String malformed");
+                    }
+                } else if (hi < 0xE000) {
+                    throw new Error("UCS-2 String malformed");
+                } else {
+                    n += 3;
+                }
+            }
+            return n;
+        }    
+        
+        //참고 자료 : https://gist.github.com/mathiasbynens/1010324#gistcomment-1676303
+    </script>
+</body>
+
+</html>
